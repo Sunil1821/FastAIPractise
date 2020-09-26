@@ -1,0 +1,4 @@
+Flask
+fastcore==1.0.9 
+fastai==1.0.42
+fastbook

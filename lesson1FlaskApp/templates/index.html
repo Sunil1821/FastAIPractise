@@ -1,0 +1,89 @@
+<html>
+
+<title>
+</title>
+
+<head>
+</head>
+<script class="jsbin" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script class="jsbin" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.0/jquery-ui.min.js"></script>
+<script>
+$(document).ready(() => {
+ $('#imageUploadForm').on('submit',(function(e) {
+        e.preventDefault();
+        console.log("preventing default Behaviour")
+        var formData = new FormData(this);
+
+        $.ajax({
+            type:'POST',
+            url: $(this).attr('action'),
+            data:formData,
+            cache:false,
+            contentType: false,
+            processData: false,
+            success:function(data){
+                console.log("success");
+                console.log(data);
+                let res = data;
+                label = res["label"];
+                probs = res["result"];
+                html_ele = `<tbody>` ;
+                probs.forEach(e => html_ele += `<tr><td>${e[0]}</td><td>${e[1]}</td></tr>`);
+                html_ele += `</tbody>`;
+                $("#result").html(html_ele);
+            },
+            error: function(data){
+                console.log("error");
+                console.log(data);
+            }
+        });
+    }));
+});
+</script>
+<script>
+
+function changeImage(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        
+        reader.onload = function (e) {
+           $('#blah').removeAttr('style');
+            $('#blah')
+                .attr('src', e.target.result)
+                .width(840)
+                .height(600);   
+        };
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+<body>
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+
+      <h1>I'll tell you which lamborghini it is</h1>
+      <hr>
+
+      <form name="photo" id="imageUploadForm" enctype="multipart/form-data" action="/classify" method="post">
+        <div class="form-group">
+          <label>Select image</label>
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" name="image" id="image" onchange="changeImage(this);"/>
+          </div>
+        </div>
+        <input type="submit" name="submit"/>
+      </form>
+
+      <img id="blah" src="#" alt="your image" style="display:none;" />
+    </div>
+  </div>
+</div>
+
+<div id="result"> </div>
+
+</body>
+
+</html>
